@@ -99,6 +99,37 @@
                 </div>
             </section>
 
+            <!-- Student Portal: Progress & Goals -->
+            <section class="materials-section" id="student-portal" style="margin-top: 10px;">
+                <div class="section-header">
+                    <h3>My Learning Overview</h3>
+                </div>
+                <div class="materials-grid" style="grid-template-columns: 1fr;">
+                    <div class="material-card" style="flex-direction: column;">
+                        <h4 style="margin-bottom:10px;">Subject Progress</h4>
+                        <canvas id="student-progress-chart" height="140"></canvas>
+                    </div>
+                    <div class="material-card" style="flex-direction: column;">
+                        <h4 style="margin-bottom:10px;">Daily Goal</h4>
+                        <div id="daily-goal">
+                            <p><strong id="goal-text">Solve 5 problems today</strong></p>
+                            <div class="progress-bar" style="margin-top:8px;">
+                                <div class="progress-fill" id="daily-goal-fill" style="width: 0%"></div>
+                            </div>
+                            <p style="margin-top:8px;">Completed: <span id="daily-goal-done">0</span>/<span id="daily-goal-target">5</span></p>
+                        </div>
+                    </div>
+                    <div class="material-card" style="flex-direction: column;">
+                        <h4 style="margin-bottom:10px;">Recent Activity</h4>
+                        <ul id="recent-activity" style="list-style:none; padding-left:0; margin:0; max-height:180px; overflow:auto;"></ul>
+                    </div>
+                    <div class="material-card" style="flex-direction: column;">
+                        <h4 style="margin-bottom:10px;">Announcements</h4>
+                        <ul id="student-announcements" style="list-style:none; padding-left:0; margin:0; max-height:180px; overflow:auto;"></ul>
+                    </div>
+                </div>
+            </section>
+
             <!-- Learning Materials Section -->
             <section class="materials-section">
                 <div class="section-header">
@@ -317,6 +348,7 @@
     </div>
 
     <script src="game.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Register service worker for PWA functionality
         if ('serviceWorker' in navigator) {
@@ -509,6 +541,9 @@
 
             // Ensure role-based UI toggles reflect stored role
             updateDashboard();
+
+            // Initialize student portal UI
+            initStudentPortal();
         }
 
         // Set up all event listeners
@@ -935,7 +970,108 @@
                         materialsSection.style.display = 'none';
                     }
                 }
+                // Student portal visible only for students
+                const studentPortal = document.getElementById('student-portal');
+                if (studentPortal) {
+                    studentPortal.style.display = role === 'faculty' ? 'none' : '';
+                }
             } catch (e) {}
+        }
+
+        // ---------- Student Portal: Chart, Goals, Activity ----------
+        let studentChart;
+        function initStudentPortal() {
+            const ctx = document.getElementById('student-progress-chart');
+            if (ctx) {
+                const data = getSubjectScores();
+                studentChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Math', 'Science', 'English'],
+                        datasets: [{
+                            label: 'Score',
+                            data: [data.math, data.science, data.english],
+                            backgroundColor: ['#4a6fa5','#06d6a0','#ffd166']
+                        }]
+                    },
+                    options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+                });
+            }
+            // Daily goals init
+            loadDailyGoal();
+            // Recent activity init
+            renderRecentActivity();
+            // Announcements
+            renderStudentAnnouncements();
+        }
+
+        function getSubjectScores() {
+            const store = JSON.parse(localStorage.getItem('eduquest_scores') || '{}');
+            return { math: store.math || 0, science: store.science || 0, english: store.english || 0 };
+        }
+        function setSubjectScore(subject, value) {
+            const store = JSON.parse(localStorage.getItem('eduquest_scores') || '{}');
+            store[subject] = Math.max(0, Math.min(100, value));
+            localStorage.setItem('eduquest_scores', JSON.stringify(store));
+            if (studentChart) {
+                const idx = subject === 'math' ? 0 : subject === 'science' ? 1 : 2;
+                studentChart.data.datasets[0].data[idx] = store[subject];
+                studentChart.update();
+            }
+        }
+
+        function loadDailyGoal() {
+            const goal = JSON.parse(localStorage.getItem('eduquest_daily_goal') || 'null') || { target: 5, done: 0, text: 'Solve 5 problems today', date: new Date().toDateString() };
+            // Reset if new day
+            const today = new Date().toDateString();
+            if (goal.date !== today) { goal.done = 0; goal.date = today; }
+            document.getElementById('goal-text').textContent = goal.text;
+            document.getElementById('daily-goal-target').textContent = goal.target;
+            document.getElementById('daily-goal-done').textContent = goal.done;
+            document.getElementById('daily-goal-fill').style.width = `${Math.min(100, (goal.done/goal.target)*100)}%`;
+            localStorage.setItem('eduquest_daily_goal', JSON.stringify(goal));
+        }
+        function incrementDailyGoal(amount=1) {
+            const goal = JSON.parse(localStorage.getItem('eduquest_daily_goal') || 'null') || { target: 5, done: 0, text: 'Solve 5 problems today', date: new Date().toDateString() };
+            const today = new Date().toDateString();
+            if (goal.date !== today) { goal.done = 0; goal.date = today; }
+            goal.done += amount;
+            localStorage.setItem('eduquest_daily_goal', JSON.stringify(goal));
+            loadDailyGoal();
+        }
+
+        function logActivity(action, subject, details) {
+            const list = JSON.parse(localStorage.getItem('eduquest_activity') || '[]');
+            list.unshift({ ts: Date.now(), action, subject, details });
+            localStorage.setItem('eduquest_activity', JSON.stringify(list.slice(0, 50)));
+            renderRecentActivity();
+        }
+        function renderRecentActivity() {
+            const list = JSON.parse(localStorage.getItem('eduquest_activity') || '[]');
+            const ul = document.getElementById('recent-activity');
+            if (!ul) return;
+            ul.innerHTML = '';
+            list.slice(0,10).forEach(item => {
+                const li = document.createElement('li');
+                const date = new Date(item.ts).toLocaleString();
+                li.textContent = `[${date}] ${item.subject}: ${item.action} — ${item.details}`;
+                ul.appendChild(li);
+            });
+        }
+
+        function renderStudentAnnouncements() {
+            const list = JSON.parse(localStorage.getItem('eduquest_announcements') || '[]');
+            const ul = document.getElementById('student-announcements');
+            if (!ul) return;
+            ul.innerHTML = '';
+            const myName = (JSON.parse(localStorage.getItem('eduquest_user')||'{}').username)||'';
+            list.filter(a => a.audience === 'all' || (a.audience === 'student' && (!a.target || a.target === myName)))
+                .slice(-10).reverse()
+                .forEach(a => {
+                    const li = document.createElement('li');
+                    li.textContent = `${a.title}: ${a.message}`;
+                    ul.appendChild(li);
+                });
         }
 
         // Memory Match Game
