@@ -46,6 +46,9 @@
                     <img src="https://placeholder-image-service.onrender.com/image/30x30?prompt=hamburger%20menu%20icon&id=menu-icon-1" alt="Navigation menu">
                 </button>
                 <h1>EduQuest</h1>
+                <button id="login-btn" class="icon-btn" title="Login">
+                    <img src="https://img.icons8.com/fluency-systems-regular/30/login-rounded-right.png" alt="Login">
+                </button>
                 <button id="profile-btn" class="icon-btn">
                     <img src="https://placeholder-image-service.onrender.com/image/30x30?prompt=user%20profile%20icon&id=profile-icon-1" alt="User profile">
                 </button>
@@ -537,6 +540,14 @@
             uploadBtn.addEventListener('click', () => {
                 uploadModal.style.display = 'block';
             });
+
+            // Go to login page
+            const loginBtn = document.getElementById('login-btn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', () => {
+                    window.location.href = 'login.html';
+                });
+            }
 
             closeModalBtn.addEventListener('click', closeUploadModal);
             cancelUploadBtn.addEventListener('click', closeUploadModal);
