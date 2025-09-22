@@ -244,15 +244,19 @@
                 </div>
 
                 <div id="memory-game-section" style="display: none;">
+                    <div class="vocab-header">
+                        <h3>VOCABULARY MATCHING</h3>
+                    </div>
                     <div class="memory-stats">
                         <span>Moves: <strong id="memory-moves">0</strong></span>
-                        <span>Matches: <strong id="memory-matches">0</strong>/8</span>
+                        <span>Matches: <strong id="memory-matches">0</strong>/10</span>
                     </div>
-                    <div id="memory-grid" class="memory-grid" aria-label="Memory matching cards" role="grid"></div>
+                    <div id="memory-grid" class="memory-grid" aria-label="Vocabulary matching cards" role="grid"></div>
                     <div class="feedback-message" id="memory-complete" style="display: none;">
                         <p id="memory-feedback-text">Great! You matched all pairs!</p>
                         <button id="memory-restart" class="primary-btn">Play Again</button>
                     </div>
+                    <div id="match-checkmark" aria-hidden="true">✓</div>
                 </div>
             </div>
             
@@ -651,14 +655,16 @@
 
         // Memory Match Game
         const vocabularyPairs = [
-            { id: 'osmosis', front: 'Osmosis', match: 'Movement of water across membrane' },
-            { id: 'photosynthesis', front: 'Photosynthesis', match: 'Plants convert light to energy' },
-            { id: 'evaporation', front: 'Evaporation', match: 'Liquid to gas phase change' },
-            { id: 'gravity', front: 'Gravity', match: 'Force attracting objects to Earth' },
-            { id: 'atom', front: 'Atom', match: 'Smallest unit of matter' },
-            { id: 'fraction', front: 'Fraction', match: 'Represents part of a whole' },
-            { id: 'perimeter', front: 'Perimeter', match: 'Distance around a shape' },
-            { id: 'habitat', front: 'Habitat', match: 'Natural home of an organism' }
+            { id: 'amiable', front: 'Amiable', match: 'Friendly or pleasant' },
+            { id: 'meticulous', front: 'Meticulous', match: 'Very careful and precise' },
+            { id: 'innovate', front: 'Innovate', match: 'Introduce new ideas or methods' },
+            { id: 'vivid', front: 'Vivid', match: 'Bright, clear, and detailed' },
+            { id: 'empathy', front: 'Empathy', match: 'Understanding others’ feelings' },
+            { id: 'resilient', front: 'Resilient', match: 'Able to recover quickly' },
+            { id: 'chronology', front: 'Chronology', match: 'Order of events in time' },
+            { id: 'artifact', front: 'Artifact', match: 'Object from the past made by people' },
+            { id: 'habitat', front: 'Habitat', match: 'Natural home of an organism' },
+            { id: 'perimeter', front: 'Perimeter', match: 'Distance around a shape' }
         ];
 
         let memoryState = {
@@ -690,7 +696,7 @@
             // Render cards
             deck.forEach((card, idx) => {
                 const cardEl = document.createElement('button');
-                cardEl.className = 'memory-card';
+                cardEl.className = `memory-card ${card.type === 'word' ? 'is-word' : 'is-def'}`;
                 cardEl.setAttribute('data-key', card.key);
                 cardEl.setAttribute('data-type', card.type);
                 cardEl.setAttribute('aria-label', 'Hidden card');
@@ -719,6 +725,7 @@
                 memoryState.firstCard.classList.add('matched');
                 memoryState.matches++;
                 document.getElementById('memory-matches').textContent = memoryState.matches.toString();
+                showMatchCheckmarkBetween(memoryState.firstCard, cardEl);
                 memoryState.firstCard = null;
                 if (memoryState.matches === vocabularyPairs.length) {
                     // Completed
@@ -741,6 +748,19 @@
                     memoryState.lockBoard = false;
                 }, 800);
             }
+        }
+
+        function showMatchCheckmarkBetween(cardA, cardB) {
+            const check = document.getElementById('match-checkmark');
+            const rectA = cardA.getBoundingClientRect();
+            const rectB = cardB.getBoundingClientRect();
+            const midX = (rectA.left + rectA.right + rectB.left + rectB.right) / 4;
+            const midY = (rectA.top + rectA.bottom + rectB.top + rectB.bottom) / 4;
+
+            check.style.left = midX + 'px';
+            check.style.top = midY + 'px';
+            check.classList.add('show');
+            setTimeout(() => check.classList.remove('show'), 600);
         }
 
         // Save user data to localStorage
