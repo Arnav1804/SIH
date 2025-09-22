@@ -670,17 +670,10 @@
         function setupEventListeners() {
             // Landing actions
             if (enterStudentBtn) enterStudentBtn.addEventListener('click', () => {
-                // If not logged in, go to login with student role pre-select via page
-                const saved = localStorage.getItem('eduquest_user');
-                if (!saved) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-                landingScreen.classList.remove('active');
-                dashboardScreen.classList.add('active');
+                window.location.href = 'login.html';
             });
             if (enterTeacherBtn) enterTeacherBtn.addEventListener('click', () => {
-                window.location.href = 'dashboard.html';
+                window.location.href = 'login.html';
             });
 
             // Menu button
