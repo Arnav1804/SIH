@@ -5,6 +5,7 @@ const urlsToCache = [
   '/',
   '/index.html',
   '/dashboard.html',
+  '/login.html',
   '/game.js',
   '/style.css',
   '/manifest.json', // <-- Add this line
