@@ -151,6 +151,20 @@
                         <button class="start-lesson-btn">Start</button>
                     </div>
                     
+                    <div class="lesson-card" data-lesson="memory">
+                        <div class="lesson-icon">
+                            <img src="https://placeholder-image-service.onrender.com/image/60x60?prompt=memory%20cards%20icon%20with%20brain&id=lesson-memory-1" alt="Memory matching lesson icon">
+                        </div>
+                        <div class="lesson-info">
+                            <h4>Memory Match</h4>
+                            <p>Match vocabulary words with their meanings</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <button class="start-lesson-btn">Start</button>
+                    </div>
+                    
                     <div class="lesson-card" data-lesson="science">
                         <div class="lesson-icon">
                             <img src="https://placeholder-image-service.onrender.com/image/60x60?prompt=science%20lesson%20icon%20with%20flask&id=lesson-science-1" alt="Science lesson icon">
@@ -215,7 +229,7 @@
         <div class="game-container">
             <h2 id="game-title">Math Puzzle Challenge</h2>
             <div id="game-content">
-                <div class="math-problem">
+                <div class="math-problem" id="math-game-section">
                     <p id="problem-text">Solve the equation: 2x + 5 = 15</p>
                     <div class="answer-input">
                         <label for="math-answer">x = </label>
@@ -227,6 +241,18 @@
                 <div class="feedback-message" id="feedback-message" style="display: none;">
                     <p id="feedback-text"></p>
                     <button id="next-problem" class="primary-btn">Next Problem</button>
+                </div>
+
+                <div id="memory-game-section" style="display: none;">
+                    <div class="memory-stats">
+                        <span>Moves: <strong id="memory-moves">0</strong></span>
+                        <span>Matches: <strong id="memory-matches">0</strong>/8</span>
+                    </div>
+                    <div id="memory-grid" class="memory-grid" aria-label="Memory matching cards" role="grid"></div>
+                    <div class="feedback-message" id="memory-complete" style="display: none;">
+                        <p id="memory-feedback-text">Great! You matched all pairs!</p>
+                        <button id="memory-restart" class="primary-btn">Play Again</button>
+                    </div>
                 </div>
             </div>
             
@@ -322,7 +348,8 @@
             badges: [],
             lessonsCompleted: 0,
             mathProgress: 0,
-            scienceProgress: 0
+            scienceProgress: 0,
+            memoryProgress: 0
         };
 
         // Initialize app
@@ -503,7 +530,19 @@
             gameScreen.classList.add('active');
             
             if (lessonType === 'math') {
+                document.getElementById('game-title').textContent = 'Math Puzzle Challenge';
+                document.getElementById('math-game-section').style.display = 'block';
+                document.getElementById('feedback-message').style.display = 'none';
+                document.getElementById('memory-game-section').style.display = 'none';
+                document.querySelector('.game-progress').style.display = 'block';
                 initMathGame();
+            } else if (lessonType === 'memory') {
+                document.getElementById('game-title').textContent = 'Memory Match – Vocabulary';
+                document.getElementById('math-game-section').style.display = 'none';
+                document.getElementById('feedback-message').style.display = 'none';
+                document.getElementById('memory-game-section').style.display = 'block';
+                document.querySelector('.game-progress').style.display = 'none';
+                initMemoryGame();
             } else if (lessonType === 'science') {
                 // Science game would be implemented similarly
                 alert('Science quiz coming soon!');
@@ -598,6 +637,8 @@
             // Update progress bars
             document.querySelector('[data-lesson="math"] .progress-fill').style.width = `${userData.mathProgress}%`;
             document.querySelector('[data-lesson="science"] .progress-fill').style.width = `${userData.scienceProgress}%`;
+            const memoryProgressEl = document.querySelector('[data-lesson="memory"] .progress-fill');
+            if (memoryProgressEl) memoryProgressEl.style.width = `${userData.memoryProgress || 0}%`;
             
             // Update badges
             userData.badges.forEach(badge => {
@@ -606,6 +647,100 @@
                     badgeElement.classList.remove('locked');
                 }
             });
+        }
+
+        // Memory Match Game
+        const vocabularyPairs = [
+            { id: 'osmosis', front: 'Osmosis', match: 'Movement of water across membrane' },
+            { id: 'photosynthesis', front: 'Photosynthesis', match: 'Plants convert light to energy' },
+            { id: 'evaporation', front: 'Evaporation', match: 'Liquid to gas phase change' },
+            { id: 'gravity', front: 'Gravity', match: 'Force attracting objects to Earth' },
+            { id: 'atom', front: 'Atom', match: 'Smallest unit of matter' },
+            { id: 'fraction', front: 'Fraction', match: 'Represents part of a whole' },
+            { id: 'perimeter', front: 'Perimeter', match: 'Distance around a shape' },
+            { id: 'habitat', front: 'Habitat', match: 'Natural home of an organism' }
+        ];
+
+        let memoryState = {
+            firstCard: null,
+            lockBoard: false,
+            moves: 0,
+            matches: 0
+        };
+
+        function initMemoryGame() {
+            memoryState = { firstCard: null, lockBoard: false, moves: 0, matches: 0 };
+            document.getElementById('memory-moves').textContent = '0';
+            document.getElementById('memory-matches').textContent = '0';
+            document.getElementById('memory-complete').style.display = 'none';
+            const grid = document.getElementById('memory-grid');
+            grid.innerHTML = '';
+
+            // Build deck: each pair turns into two cards, word and meaning
+            const deck = [];
+            vocabularyPairs.forEach(pair => {
+                deck.push({ key: pair.id, type: 'word', text: pair.front });
+                deck.push({ key: pair.id, type: 'def', text: pair.match });
+            });
+            // Shuffle
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            // Render cards
+            deck.forEach((card, idx) => {
+                const cardEl = document.createElement('button');
+                cardEl.className = 'memory-card';
+                cardEl.setAttribute('data-key', card.key);
+                cardEl.setAttribute('data-type', card.type);
+                cardEl.setAttribute('aria-label', 'Hidden card');
+                cardEl.setAttribute('role', 'gridcell');
+                cardEl.innerHTML = `<span class="card-front">${card.text}</span><span class="card-back">?</span>`;
+                cardEl.addEventListener('click', () => flipMemoryCard(cardEl));
+                grid.appendChild(cardEl);
+            });
+
+            document.getElementById('memory-restart').onclick = initMemoryGame;
+        }
+
+        function flipMemoryCard(cardEl) {
+            if (memoryState.lockBoard || cardEl.classList.contains('matched') || cardEl === memoryState.firstCard) return;
+            cardEl.classList.add('flipped');
+            if (!memoryState.firstCard) {
+                memoryState.firstCard = cardEl;
+                return;
+            }
+            memoryState.moves++;
+            document.getElementById('memory-moves').textContent = memoryState.moves.toString();
+            const isMatch = cardEl.getAttribute('data-key') === memoryState.firstCard.getAttribute('data-key') &&
+                            cardEl.getAttribute('data-type') !== memoryState.firstCard.getAttribute('data-type');
+            if (isMatch) {
+                cardEl.classList.add('matched');
+                memoryState.firstCard.classList.add('matched');
+                memoryState.matches++;
+                document.getElementById('memory-matches').textContent = memoryState.matches.toString();
+                memoryState.firstCard = null;
+                if (memoryState.matches === vocabularyPairs.length) {
+                    // Completed
+                    userData.points += 20; // bonus for finishing
+                    userData.memoryProgress = 100;
+                    userData.lessonsCompleted++;
+                    awardBadge('memory');
+                    saveUserData();
+                    updateDashboard();
+                    const complete = document.getElementById('memory-complete');
+                    complete.style.display = 'block';
+                    document.getElementById('memory-feedback-text').textContent = `Great! You matched all pairs in ${memoryState.moves} moves. +20 points`;
+                }
+            } else {
+                memoryState.lockBoard = true;
+                setTimeout(() => {
+                    cardEl.classList.remove('flipped');
+                    memoryState.firstCard.classList.remove('flipped');
+                    memoryState.firstCard = null;
+                    memoryState.lockBoard = false;
+                }, 800);
+            }
         }
 
         // Save user data to localStorage
