@@ -29,6 +29,14 @@
                         <img src="https://placeholder-image-service.onrender.com/image/80x80?prompt=Spanish%20flag%20icon&id=lang-es-1" alt="Spanish flag representing Spanish language">
                         <span>Español</span>
                     </button>
+                    <button class="language-btn" data-lang="hi">
+                        <img src="https://placeholder-image-service.onrender.com/image/80x80?prompt=India%20flag%20icon&id=lang-hi-1" alt="Hindi language">
+                        <span>हिन्दी</span>
+                    </button>
+                    <button class="language-btn" data-lang="od">
+                        <img src="https://placeholder-image-service.onrender.com/image/80x80?prompt=India%20flag%20icon&id=lang-od-1" alt="Odia language">
+                        <span>ଓଡ଼ିଆ</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -356,6 +364,50 @@
             memoryProgress: 0
         };
 
+        // Translations
+        const translations = {
+            en: {
+                welcome: 'Hello',
+                lessonsLabel: 'STEM Lessons',
+                mathTitle: 'Mathematics Puzzle',
+                mathDesc: 'Solve equations and unlock rewards',
+                scienceTitle: 'Science Quiz',
+                scienceDesc: 'Test your knowledge of scientific concepts',
+                export: 'Export Progress',
+                import: 'Import Progress'
+            },
+            es: {
+                welcome: 'Hola',
+                lessonsLabel: 'Lecciones STEM',
+                mathTitle: 'Rompecabezas de Matemáticas',
+                mathDesc: 'Resuelve ecuaciones y gana recompensas',
+                scienceTitle: 'Cuestionario de Ciencia',
+                scienceDesc: 'Pon a prueba tus conocimientos científicos',
+                export: 'Exportar Progreso',
+                import: 'Importar Progreso'
+            },
+            hi: {
+                welcome: 'नमस्ते',
+                lessonsLabel: 'एसटीईएम पाठ',
+                mathTitle: 'गणित पहेली',
+                mathDesc: 'समस्याएँ हल करें और इनाम पाएँ',
+                scienceTitle: 'विज्ञान प्रश्नोत्तरी',
+                scienceDesc: 'वैज्ञानिक अवधारणाओं का ज्ञान जाँचें',
+                export: 'प्रगति निर्यात करें',
+                import: 'प्रगति आयात करें'
+            },
+            od: {
+                welcome: 'ନମସ୍କାର',
+                lessonsLabel: 'STEM ପାଠ',
+                mathTitle: 'ଗଣିତ ପଜଲ୍',
+                mathDesc: 'ସମୀକରଣ ସମାଧାନ କରନ୍ତୁ ଏବଂ ପୁରସ୍କାର ଖୋଲନ୍ତୁ',
+                scienceTitle: 'ବିଜ୍ଞାନ କ୍ୱିଜ୍',
+                scienceDesc: 'ବିଜ୍ଞାନ ଜ୍ଞାନ ପରୀକ୍ଷା କରନ୍ତୁ',
+                export: 'ପ୍ରଗତି ଏକ୍ସପୋର୍ଟ',
+                import: 'ପ୍ରଗତି ଇମ୍ପୋର୍ଟ'
+            }
+        };
+
         // Initialize app
         function initApp() {
             // Load user data from localStorage if available
@@ -369,6 +421,9 @@
             
             // Set up event listeners
             setupEventListeners();
+
+            // Apply language to UI
+            applyLanguage();
         }
 
         // Set up all event listeners
@@ -380,6 +435,7 @@
                     languageScreen.classList.remove('active');
                     dashboardScreen.classList.add('active');
                     saveUserData();
+                    applyLanguage();
                 });
             });
 
@@ -455,6 +511,33 @@
             // Export/Import data
             document.getElementById('export-data').addEventListener('click', exportUserData);
             document.getElementById('import-data').addEventListener('click', importUserData);
+        }
+
+        // Apply translations to UI labels
+        function applyLanguage() {
+            const t = translations[userData.language] || translations.en;
+            // Welcome banner text
+            const welcomeEl = document.querySelector('.welcome-banner h2');
+            if (welcomeEl) {
+                welcomeEl.innerHTML = `${t.welcome}, <span id="username">${userData.username}</span>!`;
+            }
+            // Lessons label
+            const lessonsLabelEl = document.querySelector('.lessons-section h3');
+            if (lessonsLabelEl) lessonsLabelEl.textContent = t.lessonsLabel;
+            // Lesson cards
+            const mathTitleEl = document.querySelector('[data-lesson="math"] .lesson-info h4');
+            const mathDescEl = document.querySelector('[data-lesson="math"] .lesson-info p');
+            if (mathTitleEl) mathTitleEl.textContent = t.mathTitle;
+            if (mathDescEl) mathDescEl.textContent = t.mathDesc;
+            const sciTitleEl = document.querySelector('[data-lesson="science"] .lesson-info h4');
+            const sciDescEl = document.querySelector('[data-lesson="science"] .lesson-info p');
+            if (sciTitleEl) sciTitleEl.textContent = t.scienceTitle;
+            if (sciDescEl) sciDescEl.textContent = t.scienceDesc;
+            // Export/Import labels in drawer
+            const exportSpan = document.querySelector('#export-data span');
+            const importSpan = document.querySelector('#import-data span');
+            if (exportSpan) exportSpan.textContent = t.export;
+            if (importSpan) importSpan.textContent = t.import;
         }
 
         // Handle file uploads
