@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>EduQuest Login</title>
+	<meta name="color-scheme" content="light dark" />
+	<style>
+		:root {
+			--primary: #4F46E5; /* Indigo */
+			--primary-600: #4338CA;
+			--bg: #0b1020;
+			--card: #ffffff;
+			--muted: #6b7280;
+			--error: #DC2626;
+			--ring: 0 0 0 3px rgba(79, 70, 229, 0.25);
+
+			/* Accents per role */
+			--student-accent: #10B981; /* Emerald */
+			--faculty-accent: #F59E0B; /* Amber */
+
+			--radius: 14px;
+			--shadow-1: 0 8px 30px rgba(0,0,0,0.12);
+			--shadow-2: 0 10px 40px rgba(0,0,0,0.18);
+		}
+
+		* { box-sizing: border-box; }
+		html, body {
+			height: 100%;
+			margin: 0;
+			font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+			color: #0f172a;
+			background:
+				radial-gradient(1200px 600px at 80% -10%, rgba(79,70,229,0.18), transparent 60%),
+				radial-gradient(1000px 500px at -10% 10%, rgba(16,185,129,0.12), transparent 55%),
+				linear-gradient(180deg, #f8fafc, #eef2ff 30%, #f8fafc 100%);
+		}
+
+		.container {
+			min-height: 100%;
+			display: grid;
+			place-items: center;
+			padding: 24px;
+		}
+
+		.card {
+			width: 100%;
+			max-width: 960px;
+			background: var(--card);
+			border-radius: var(--radius);
+			box-shadow: var(--shadow-2);
+			overflow: hidden;
+			display: grid;
+			grid-template-columns: 1.1fr 0.9fr;
+		}
+
+		/* Left: branding / illustration */
+		.brand {
+			position: relative;
+			padding: 40px 40px 56px;
+			background:
+				radial-gradient(600px 300px at 20% 10%, rgba(79,70,229,0.18), transparent 60%),
+				radial-gradient(400px 220px at 90% 20%, rgba(245,158,11,0.14), transparent 60%),
+				linear-gradient(180deg, #ffffff, #f8fafc 60%, #eef2ff);
+		}
+		.logo {
+			display: inline-flex;
+			align-items: center;
+			gap: 10px;
+			font-weight: 800;
+			font-size: 22px;
+			color: var(--primary);
+			letter-spacing: 0.2px;
+		}
+		.logo .mark {
+			width: 34px;
+			height: 34px;
+			border-radius: 8px;
+			background: linear-gradient(135deg, var(--primary), var(--primary-600));
+			display: grid;
+			place-items: center;
+			color: #fff;
+			font-size: 18px;
+			box-shadow: 0 8px 20px rgba(67,56,202,0.35);
+		}
+		.hero {
+			margin-top: 28px;
+		}
+		.hero h1 {
+			margin: 0 0 8px 0;
+			font-size: 28px;
+			line-height: 1.2;
+		}
+		.hero p {
+			margin: 0;
+			color: var(--muted);
+		}
+		.badges {
+			margin-top: 28px;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+		}
+		.pill {
+			font-size: 12px;
+			padding: 6px 10px;
+			border-radius: 999px;
+			background: #EEF2FF;
+			color: #3730A3;
+			border: 1px solid #E0E7FF;
+		}
+
+		.illustration {
+			position: absolute;
+			right: 10px;
+			bottom: 8px;
+			width: min(46%, 260px);
+			opacity: 0.9;
+			pointer-events: none;
+		}
+		.illustration svg { width: 100%; height: auto; display: block; }
+
+		/* Right: login */
+		.panel {
+			padding: 28px;
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+			background: #ffffff;
+		}
+
+		.tabs {
+			display: inline-flex;
+			border: 1px solid #e5e7eb;
+			border-radius: 12px;
+			overflow: hidden;
+			box-shadow: var(--shadow-1);
+			align-self: start;
+		}
+		.tab {
+			appearance: none;
+			background: #fff;
+			border: none;
+			padding: 12px 16px;
+			font-weight: 600;
+			color: #111827;
+			cursor: pointer;
+			transition: background 0.2s ease, color 0.2s ease;
+		}
+		.tab[aria-selected="true"] {
+			color: #fff;
+			background: var(--primary);
+		}
+		.tab:focus-visible {
+			outline: none;
+			box-shadow: var(--ring);
+			position: relative;
+			z-index: 2;
+		}
+
+		.diff-note {
+			margin-top: -4px;
+			font-size: 12px;
+			color: var(--muted);
+		}
+
+		.form {
+			margin-top: 6px;
+			display: grid;
+			gap: 14px;
+		}
+
+		.field {
+			display: grid;
+			gap: 6px;
+		}
+		label {
+			font-weight: 600;
+			font-size: 14px;
+		}
+		.input {
+			display: block;
+			width: 100%;
+			padding: 12px 14px;
+			border-radius: 10px;
+			border: 1px solid #e5e7eb;
+			background: #fff;
+			font-size: 15px;
+			transition: border-color 0.15s ease, box-shadow 0.15s ease;
+		}
+		.input:focus {
+			outline: none;
+			border-color: var(--primary);
+			box-shadow: var(--ring);
+		}
+		.input[aria-invalid="true"] {
+			border-color: var(--error);
+			box-shadow: 0 0 0 3px rgba(220,38,38,0.15);
+		}
+
+		.actions {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			flex-wrap: wrap;
+			margin-top: 4px;
+		}
+		.btn {
+			appearance: none;
+			border: none;
+			border-radius: 12px;
+			padding: 12px 16px;
+			font-weight: 700;
+			letter-spacing: 0.2px;
+			cursor: pointer;
+			transition: transform 0.02s ease, box-shadow 0.2s ease, background 0.2s ease;
+			background: var(--primary);
+			color: #fff;
+			box-shadow: 0 8px 20px rgba(79,70,229,0.25);
+		}
+		.btn:hover { transform: translateY(-1px); }
+		.btn:active { transform: translateY(0); }
+
+		.link {
+			color: var(--primary);
+			text-decoration: none;
+			font-weight: 600;
+		}
+		.link:focus-visible {
+			outline: none;
+			box-shadow: var(--ring);
+			border-radius: 6px;
+		}
+
+		.error {
+			color: var(--error);
+			font-size: 13px;
+			min-height: 16px;
+		}
+
+		.meta {
+			margin-top: 4px;
+			font-size: 12px;
+			color: var(--muted);
+		}
+
+		/* Accent stripe to differentiate user type */
+		.accent {
+			height: 6px;
+			width: 100%;
+			border-radius: 999px;
+			background: var(--student-accent);
+			box-shadow: 0 6px 14px rgba(16,185,129,0.35);
+		}
+		.accent.faculty {
+			background: var(--faculty-accent);
+			box-shadow: 0 6px 14px rgba(245,158,11,0.35);
+		}
+
+		/* Forms show/hide */
+		[role="tabpanel"] { display: none; }
+		[role="tabpanel"][data-active="true"] { display: block; }
+
+		/* Responsive */
+		@media (max-width: 900px) {
+			.card { grid-template-columns: 1fr; }
+			.brand { padding-bottom: 24px; }
+			.illustration { display: none; }
+		}
+	</style>
+</head>
+<body>
+	<main class="container">
+		<section class="card" aria-labelledby="loginTitle">
+			<div class="brand">
+				<div class="logo" aria-label="EduQuest">
+					<span class="mark">EQ</span>
+					EduQuest
+				</div>
+				<div class="hero">
+					<h1 id="loginTitle">Welcome back!</h1>
+					<p>Log in to continue your gamified STEM journey.</p>
+					<div class="badges" aria-hidden="true">
+						<span class="pill">Math Whiz</span>
+						<span class="pill">Science Explorer</span>
+						<span class="pill">Tech Master</span>
+						<span class="pill">Builder</span>
+					</div>
+				</div>
+				<div class="illustration" aria-hidden="true">
+					<svg viewBox="0 0 260 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<defs>
+							<linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+								<stop stop-color="#4F46E5"/>
+								<stop offset="1" stop-color="#10B981"/>
+							</linearGradient>
+						</defs>
+						<g opacity="0.9">
+							<circle cx="40" cy="30" r="6" fill="url(#g1)"/>
+							<circle cx="90" cy="18" r="3" fill="#F59E0B"/>
+							<circle cx="210" cy="40" r="4" fill="#4F46E5"/>
+							<rect x="20" y="70" rx="10" width="220" height="130" fill="#fff" stroke="#E5E7EB"/>
+							<rect x="35" y="90" rx="6" width="120" height="16" fill="#EEF2FF"/>
+							<rect x="35" y="112" rx="6" width="180" height="16" fill="#ECFDF5"/>
+							<rect x="35" y="134" rx="6" width="160" height="16" fill="#FFF7ED"/>
+							<rect x="35" y="164" rx="10" width="90" height="26" fill="#4F46E5"/>
+						</g>
+					</svg>
+				</div>
+			</div>
+
+			<div class="panel" aria-describedby="roleNote">
+				<div class="tabs" role="tablist" aria-label="Login role tabs">
+					<button id="tab-student" class="tab" role="tab" aria-selected="true" aria-controls="panel-student">
+						Student
+					</button>
+					<button id="tab-faculty" class="tab" role="tab" aria-selected="false" aria-controls="panel-faculty">
+						Faculty
+					</button>
+				</div>
+				<div class="diff-note" id="roleNote">
+					Switch tabs to log in as a student or a faculty member.
+				</div>
+
+				<div class="accent" id="accentStripe" aria-hidden="true"></div>
+
+				<!-- Student form -->
+				<section id="panel-student" role="tabpanel" aria-labelledby="tab-student" data-active="true">
+					<form id="form-student" class="form" novalidate>
+						<div class="field">
+							<label for="student-identifier">Username or Email</label>
+							<input id="student-identifier" name="identifier" class="input" type="text" inputmode="email"
+								autocomplete="username" required aria-invalid="false" placeholder="e.g., ananya@school.edu" />
+							<div class="error" id="student-identifier-error" role="alert" aria-live="polite"></div>
+						</div>
+						<div class="field">
+							<label for="student-password">Password</label>
+							<input id="student-password" name="password" class="input" type="password"
+								autocomplete="current-password" minlength="6" required aria-invalid="false" placeholder="••••••••" />
+							<div class="error" id="student-password-error" role="alert" aria-live="polite"></div>
+						</div>
+						<div class="actions">
+							<button type="submit" class="btn">Log In</button>
+							<a class="link" href="#" aria-label="Forgot your password?">Forgot password?</a>
+						</div>
+						<p class="meta">By logging in, you agree to our Terms and Privacy Policy.</p>
+					</form>
+				</section>
+
+				<!-- Faculty form -->
+				<section id="panel-faculty" role="tabpanel" aria-labelledby="tab-faculty" data-active="false">
+					<form id="form-faculty" class="form" novalidate>
+						<div class="field">
+							<label for="faculty-identifier">Email or Faculty ID</label>
+							<input id="faculty-identifier" name="identifier" class="input" type="text" inputmode="email"
+								autocomplete="username" required aria-invalid="false" placeholder="e.g., prof.kumar@uni.edu" />
+							<div class="error" id="faculty-identifier-error" role="alert" aria-live="polite"></div>
+						</div>
+						<div class="field">
+							<label for="faculty-password">Password</label>
+							<input id="faculty-password" name="password" class="input" type="password"
+								autocomplete="current-password" minlength="6" required aria-invalid="false" placeholder="••••••••" />
+							<div class="error" id="faculty-password-error" role="alert" aria-live="polite"></div>
+						</div>
+						<div class="actions">
+							<button type="submit" class="btn">Log In</button>
+							<a class="link" href="#" aria-label="Forgot your password?">Forgot password?</a>
+						</div>
+						<p class="meta">Admins use SSO. For assistance, contact IT.</p>
+					</form>
+				</section>
+			</div>
+		</section>
+	</main>
+
+	<script>
+		(function () {
+			const tabStudent = document.getElementById('tab-student');
+			const tabFaculty = document.getElementById('tab-faculty');
+			const panelStudent = document.getElementById('panel-student');
+			const panelFaculty = document.getElementById('panel-faculty');
+			const accent = document.getElementById('accentStripe');
+
+			function setActive(role) {
+				const studentActive = role === 'student';
+
+				tabStudent.setAttribute('aria-selected', String(studentActive));
+				tabFaculty.setAttribute('aria-selected', String(!studentActive));
+
+				panelStudent.dataset.active = String(studentActive);
+				panelFaculty.dataset.active = String(!studentActive);
+
+				if (studentActive) {
+					accent.classList.remove('faculty');
+				} else {
+					accent.classList.add('faculty');
+				}
+			}
+
+			tabStudent.addEventListener('click', () => setActive('student'));
+			tabFaculty.addEventListener('click', () => setActive('faculty'));
+
+			// Keyboard support for tabs
+			[tabStudent, tabFaculty].forEach(tab => {
+				tab.addEventListener('keydown', (e) => {
+					if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+						e.preventDefault();
+						const next = tab === tabStudent ? tabFaculty : tabStudent;
+						next.focus();
+						next.click();
+					}
+				});
+			});
+
+			// Simple validation helpers
+			function setError(input, message) {
+				const err = document.getElementById(input.id + '-error');
+				input.setAttribute('aria-invalid', 'true');
+				err.textContent = message || '';
+			}
+			function clearError(input) {
+				const err = document.getElementById(input.id + '-error');
+				input.setAttribute('aria-invalid', 'false');
+				err.textContent = '';
+			}
+			function isEmailLike(v) {
+				return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+			}
+
+			// Form handlers
+			function attachValidation(formId, idFieldId, pwdFieldId) {
+				const form = document.getElementById(formId);
+				const idField = document.getElementById(idFieldId);
+				const pwdField = document.getElementById(pwdFieldId);
+
+				idField.addEventListener('input', () => {
+					if (idField.value.trim().length === 0) setError(idField, 'This field is required.');
+					else clearError(idField);
+				});
+				pwdField.addEventListener('input', () => {
+					if (pwdField.value.length < 6) setError(pwdField, 'Use at least 6 characters.');
+					else clearError(pwdField);
+				});
+
+				form.addEventListener('submit', (e) => {
+					e.preventDefault();
+					let ok = true;
+
+					// Identifier validation: allow username or email; hint if looks invalid
+					const ident = idField.value.trim();
+					if (!ident) {
+						setError(idField, 'This field is required.');
+						ok = false;
+					} else if (ident.includes('@') && !isEmailLike(ident)) {
+						setError(idField, 'Please enter a valid email.');
+						ok = false;
+					} else {
+						clearError(idField);
+					}
+
+					// Password validation
+					if (pwdField.value.length < 6) {
+						setError(pwdField, 'Use at least 6 characters.');
+						ok = false;
+					} else {
+						clearError(pwdField);
+					}
+
+					if (!ok) return;
+
+					// TODO: Replace with actual auth call
+					// Example payload:
+					const payload = {
+						identifier: ident,
+						password: pwdField.value
+					};
+
+					// Simulate auth and feedback
+					Promise.resolve().then(() => {
+						// Demo: treat "wrong" as invalid
+						if (payload.password === 'wrong') {
+							setError(pwdField, 'Incorrect credentials. Try again.');
+							pwdField.focus();
+							return;
+						}
+						// On success, redirect based on role
+						const isStudent = formId === 'form-student';
+						window.location.assign(isStudent ? '/dashboard/student' : '/dashboard/faculty');
+					});
+				});
+			}
+
+			attachValidation('form-student', 'student-identifier', 'student-password');
+			attachValidation('form-faculty', 'faculty-identifier', 'faculty-password');
+		})();
+	</script>
+</body>
+</html>
