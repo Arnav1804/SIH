@@ -47,37 +47,101 @@ body {
     padding: 20px;
 }
 
-/* Language Selection Screen */
-#language-screen {
+/* Landing Screen */
+#landing-screen {
     background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    position: relative;
+    overflow: hidden;
 }
 
-#language-screen .header {
+#landing-screen .header {
     text-align: center;
     margin-bottom: 40px;
 }
 
-#language-screen .logo {
+#landing-screen .logo {
     margin-bottom: 20px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-#language-screen h1 {
+#landing-screen h1 {
     font-size: 3.5rem;
     font-weight: 800;
     margin-bottom: 10px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-#language-screen .subtitle {
+#landing-screen .subtitle {
     font-size: 1.2rem;
     opacity: 0.9;
+}
+
+/* Floating ambient shapes */
+#landing-screen::before,
+#landing-screen::after {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+    animation: floatBlob 20s ease-in-out infinite;
+}
+#landing-screen::before {
+    background: radial-gradient(circle at 30% 30%, #4cc9f0, transparent 60%);
+    top: -120px; left: -120px;
+}
+#landing-screen::after {
+    background: radial-gradient(circle at 70% 70%, #f72585, transparent 60%);
+    bottom: -140px; right: -140px;
+    animation-delay: 6s;
+}
+
+@keyframes floatBlob {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(20px, -20px) scale(1.05); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+/* Landing cards: glass + hover */
+#landing-screen .materials-grid {
+    gap: 28px;
+}
+
+#landing-screen .material-card {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+    backdrop-filter: blur(10px);
+    transform: translateY(0) scale(1);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+#landing-screen .material-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 26px 60px rgba(0,0,0,0.28);
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
+#landing-screen .material-card img {
+    border-radius: 16px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+}
+
+#landing-screen h3 {
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+
+#landing-screen p {
+    color: rgba(255,255,255,0.9);
 }
 
 .language-selection {
@@ -254,6 +318,24 @@ body {
 /* Materials Section */
 .materials-section {
     margin-bottom: 40px;
+}
+
+/* Portals section (Student + Faculty side-by-side) */
+.portals-section {
+    margin-bottom: 40px;
+}
+
+.portals-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+    gap: 28px;
+    align-items: stretch;
+}
+
+@media (max-width: 768px) {
+    .portals-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .section-header {
@@ -614,6 +696,12 @@ body {
     font-weight: 600;
 }
 
+/* Ensure quiz question text appears black for readability */
+#game-screen #geometry-question,
+#game-screen #physics-question {
+    color: #000000;
+}
+
 .game-progress {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -850,13 +938,8 @@ body {
         padding: 15px;
     }
     
-    #language-screen h1 {
+    #landing-screen h1 {
         font-size: 2.5rem;
-    }
-    
-    .language-options {
-        flex-direction: column;
-        align-items: center;
     }
     
     .progress-stats {
