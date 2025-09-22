@@ -639,6 +639,90 @@ body {
     transition: left 0.3s ease;
 }
 
+/* Memory Game */
+.memory-stats {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(70px, 1fr));
+    gap: 12px;
+    margin: 0 auto 20px;
+}
+
+.memory-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.12);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    color: #1b2559;
+    border-radius: 12px;
+    height: 100px;
+    padding: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.memory-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+}
+
+.memory-card .card-front,
+.memory-card .card-back {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    text-align: center;
+    line-height: 1.2;
+    backface-visibility: hidden;
+    transition: opacity 0.2s ease;
+}
+
+.memory-card .card-back {
+    color: white;
+    font-weight: 800;
+    font-size: 1.6rem;
+}
+
+.memory-card .card-front {
+    background: white;
+    border-radius: 8px;
+    opacity: 0;
+}
+
+.memory-card.flipped .card-front,
+.memory-card.matched .card-front {
+    opacity: 1;
+}
+
+.memory-card.flipped .card-back,
+.memory-card.matched .card-back {
+    opacity: 0;
+}
+
+.memory-card.matched {
+    border-color: #2ed573;
+    background: rgba(46, 213, 115, 0.25);
+}
+
+@media (max-width: 480px) {
+    .memory-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .memory-card {
+        height: 90px;
+    }
+}
+
 .drawer.open {
     left: 0;
 }
