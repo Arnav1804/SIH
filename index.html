@@ -497,7 +497,6 @@
             const savedData = localStorage.getItem('eduquest_user');
             if (savedData) {
                 userData = JSON.parse(savedData);
-                updateDashboard();
                 languageScreen.classList.remove('active');
                 dashboardScreen.classList.add('active');
             }
@@ -507,6 +506,9 @@
 
             // Apply language on load
             applyLanguage();
+
+            // Ensure role-based UI toggles reflect stored role
+            updateDashboard();
         }
 
         // Set up all event listeners
@@ -916,6 +918,24 @@
                     badgeElement.classList.remove('locked');
                 }
             });
+
+            // Toggle Upload button visibility by role
+            try {
+                const stored = localStorage.getItem('eduquest_user');
+                const parsed = stored ? JSON.parse(stored) : null;
+                const role = parsed && parsed.role ? parsed.role : 'student';
+                const uploadSectionBtn = document.getElementById('upload-btn');
+                const materialsSection = document.querySelector('.materials-section');
+                if (materialsSection) {
+                    if (role === 'faculty') {
+                        materialsSection.style.display = '';
+                        if (uploadSectionBtn) uploadSectionBtn.style.display = '';
+                    } else {
+                        // hide entire materials section for students as requested
+                        materialsSection.style.display = 'none';
+                    }
+                }
+            } catch (e) {}
         }
 
         // Memory Match Game
