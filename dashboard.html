@@ -40,7 +40,16 @@
                     </div>
                     <div class="chart-card">
                         <h3>Login Tracker</h3>
-                        <p id="login-tracker" style="text-align:center; font-weight:700; font-size:1.2rem;">Logged-in students: 0</p>
+                        <div class="login-tracker-card">
+                            <div class="lt-left">
+                                <div class="lt-icon" aria-hidden="true">👥</div>
+                                <div>
+                                    <div class="lt-label">Logged-in students</div>
+                                    <div class="lt-value" id="login-tracker">0</div>
+                                </div>
+                            </div>
+                            <div class="lt-trend" id="login-trend">+0 today</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -58,6 +67,36 @@
                 </div>
                 <div id="students-list" class="students-list">
                     <!-- Student cards will be populated here -->
+                </div>
+            </div>
+
+            <div class="students-section">
+                <h2>Assignments</h2>
+                <form id="assignment-form" class="material-card" style="display:block; padding:1rem; margin-bottom: 1rem;">
+                    <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap:10px;">
+                        <input id="as-title" type="text" placeholder="Assignment title" />
+                        <select id="as-subject">
+                            <option value="math">Math</option>
+                            <option value="science">Science</option>
+                            <option value="english">English</option>
+                        </select>
+                        <input id="as-due" type="date" />
+                        <select id="as-scope">
+                            <option value="all">All Students</option>
+                            <option value="student">Specific Student</option>
+                        </select>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px; margin-top:10px;">
+                        <input id="as-target" type="text" placeholder="Student name (optional)" />
+                        <button class="primary-btn" type="submit">Create Assignment</button>
+                    </div>
+                </form>
+                <div class="materials-grid" id="assignments-list">
+                    <!-- Assignment cards populated here -->
+                </div>
+                <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                    <button id="download-class-report" class="secondary-btn">Download Class Report (CSV)</button>
+                    <button id="download-assignments-report" class="secondary-btn">Download Assignments (CSV)</button>
                 </div>
             </div>
 
@@ -86,6 +125,7 @@
             const uploadedData = [];
             const studentsList = document.getElementById('students-list');
             const uploadedFilesContainer = document.getElementById('uploaded-files');
+            const assignmentsList = document.getElementById('assignments-list');
             
             // Set up file upload
             document.getElementById('student-data-upload').addEventListener('change', function(e) {
@@ -296,7 +336,15 @@
                 const users = JSON.parse(localStorage.getItem('eduquest_users') || '[]');
                 const count = users.filter(u => u.role === 'student').length;
                 const el = document.getElementById('login-tracker');
-                if (el) el.textContent = `Logged-in students: ${count}`;
+                const trendEl = document.getElementById('login-trend');
+                const prev = parseInt(localStorage.getItem('eduquest_login_tracker_prev') || '0');
+                if (el) el.textContent = count.toString();
+                const diff = count - prev;
+                if (trendEl) {
+                    trendEl.textContent = `${diff >= 0 ? '+' : ''}${diff} today`;
+                    trendEl.style.color = diff >= 0 ? '#2ed573' : '#ff4757';
+                }
+                localStorage.setItem('eduquest_login_tracker_prev', count.toString());
             }
 
             document.getElementById('subject-filter').addEventListener('change', updateStudentsList);
@@ -317,6 +365,120 @@
                 document.getElementById('ann-message').value='';
                 alert('Announcement posted!');
             });
+
+            // ---------------- Assignments ----------------
+            function getAssignments() {
+                try { return JSON.parse(localStorage.getItem('eduquest_assignments') || '[]'); } catch { return []; }
+            }
+            function saveAssignments(list) {
+                localStorage.setItem('eduquest_assignments', JSON.stringify(list));
+            }
+            function renderAssignments() {
+                assignmentsList.innerHTML = '';
+                const list = getAssignments();
+                if (!list.length) {
+                    const empty = document.createElement('div');
+                    empty.className = 'material-card';
+                    empty.textContent = 'No assignments yet.';
+                    assignmentsList.appendChild(empty);
+                    return;
+                }
+                list.slice().reverse().forEach((as, idx) => {
+                    const card = document.createElement('div');
+                    card.className = 'material-card';
+                    card.style.alignItems = 'flex-start';
+                    card.innerHTML = `
+                        <div class="material-thumbnail">
+                            <img src="https://placeholder-image-service.onrender.com/image/120x120?prompt=assignment%20sheet%20icon&id=as-thumb-1" alt="Assignment">
+                        </div>
+                        <div class="material-info" style="flex:1;">
+                            <h4>${as.title}</h4>
+                            <p>Subject: ${as.subject.toUpperCase()} • Due: ${as.due || 'N/A'} • Audience: ${as.scope === 'all' ? 'All' : (as.target || 'Specific')}</p>
+                            <div class="material-meta">
+                                <span class="file-type">Status: ${as.closed ? 'Closed' : 'Open'}</span>
+                            </div>
+                            <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                                <button class="secondary-btn" data-action="toggle" data-id="${as.id}">${as.closed ? 'Reopen' : 'Close'}</button>
+                                <button class="secondary-btn" data-action="delete" data-id="${as.id}">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                    assignmentsList.appendChild(card);
+                });
+            }
+            document.getElementById('assignment-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const title = document.getElementById('as-title').value.trim();
+                const subject = document.getElementById('as-subject').value;
+                const due = document.getElementById('as-due').value;
+                const scope = document.getElementById('as-scope').value;
+                const target = document.getElementById('as-target').value.trim();
+                if (!title) { alert('Title is required'); return; }
+                const list = getAssignments();
+                list.push({ id: 'a_'+Date.now(), title, subject, due, scope, target, closed: false, ts: Date.now() });
+                saveAssignments(list);
+                this.reset();
+                renderAssignments();
+                alert('Assignment created');
+            });
+            assignmentsList.addEventListener('click', function(e){
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                const action = btn.getAttribute('data-action');
+                const id = btn.getAttribute('data-id');
+                const list = getAssignments();
+                const idx = list.findIndex(a => a.id === id);
+                if (idx === -1) return;
+                if (action === 'toggle') list[idx].closed = !list[idx].closed;
+                if (action === 'delete') list.splice(idx, 1);
+                saveAssignments(list);
+                renderAssignments();
+            });
+
+            // ---------------- Reports (CSV) ----------------
+            function downloadCSV(filename, rows) {
+                if (!rows || !rows.length) { alert('No data to download'); return; }
+                const escape = (v) => {
+                    if (v === null || v === undefined) return '';
+                    const s = String(v).replace(/"/g, '""');
+                    return /[",\n]/.test(s) ? '"'+s+'"' : s;
+                };
+                const csv = rows.map(r => r.map(escape).join(',')).join('\n');
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }
+            function buildClassReportRows() {
+                const header = ['Student','Points','Lessons Completed','Badges'];
+                const rows = [header];
+                if (uploadedData.length) {
+                    uploadedData.forEach(d => rows.push([
+                        (d.filename||'').replace('.json',''), d.points||0, d.completedLessons||0, (d.badges?d.badges.length:0)
+                    ]));
+                } else {
+                    const users = JSON.parse(localStorage.getItem('eduquest_users')||'[]').filter(u=>u.role==='student');
+                    users.forEach(u => rows.push([u.username||u.phone||'Student', u.points||0, u.lessonsCompleted||0, (u.badges?u.badges.length:0)]));
+                }
+                return rows;
+            }
+            document.getElementById('download-class-report').addEventListener('click', function(){
+                downloadCSV('class_report.csv', buildClassReportRows());
+            });
+            document.getElementById('download-assignments-report').addEventListener('click', function(){
+                const list = getAssignments();
+                const rows = [['Title','Subject','Due','Audience','Target','Status','Created At']];
+                list.forEach(a => rows.push([a.title, a.subject, a.due||'', a.scope, a.target||'', a.closed?'Closed':'Open', new Date(a.ts).toLocaleString()]));
+                downloadCSV('assignments.csv', rows);
+            });
+
+            // Initial renders
+            renderAssignments();
         });
     </script>
 
@@ -367,6 +529,21 @@
             color: var(--primary);
             text-align: center;
         }
+        .login-tracker-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+        .lt-left { display:flex; align-items:center; gap:10px; }
+        .lt-icon { font-size: 1.6rem; }
+        .lt-label { color: var(--text-secondary); font-size: 0.9rem; }
+        .lt-value { font-size: 1.8rem; font-weight: 800; color: var(--primary); line-height: 1; }
+        .lt-trend { font-weight: 700; }
         
         .students-section h2 {
             margin-bottom: 1rem;
@@ -445,6 +622,8 @@
             .students-list {
                 grid-template-columns: 1fr;
             }
+            .login-tracker-card { padding: 10px; }
+            .lt-value { font-size: 1.4rem; }
         }
     </style>
 </body>
