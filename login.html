@@ -67,7 +67,13 @@
             }
             function findUser(role, identifier, password) {
                 const users = getUsers();
-                return users.find(u => u.role === role && (u.phone === identifier || u.email === identifier) && u.password === password);
+                if (role === 'student') {
+                    return users.find(u => u.role === 'student' && u.phone === identifier && u.password === password);
+                }
+                if (role === 'faculty') {
+                    return users.find(u => u.role === 'faculty' && u.email === identifier && u.password === password);
+                }
+                return null;
             }
             function userExists(role, phone, email) {
                 const users = getUsers();
@@ -110,6 +116,21 @@
                 }
             }
 
+            // Toggle links logic
+            document.addEventListener('click', function(e) {
+                const t = e.target;
+                if (t && t.id === 'student-toggle-mode') {
+                    e.preventDefault();
+                    studentMode = studentMode === 'login' ? 'signup' : 'login';
+                    renderStudentMode();
+                }
+                if (t && t.id === 'faculty-toggle-mode') {
+                    e.preventDefault();
+                    facultyMode = facultyMode === 'login' ? 'signup' : 'login';
+                    renderFacultyMode();
+                }
+            });
+
             // Handle student login
             document.getElementById('student-login-btn').addEventListener('click', function(e) {
                 e.preventDefault();
@@ -135,7 +156,7 @@
                         return;
                     }
                     localStorage.setItem('eduquest_user', JSON.stringify(user));
-                    window.location.href = 'index.html';
+                    alert('Login successful. You may now open the dashboard.');
                 } else {
                     if (userExists('student', phone, null)) {
                         if (errorEl) { errorEl.textContent = 'An account with this phone already exists.'; errorEl.style.display = 'block'; }
@@ -150,7 +171,7 @@
                     users.push(newUser);
                     saveUsers(users);
                     localStorage.setItem('eduquest_user', JSON.stringify(newUser));
-                    window.location.href = 'index.html';
+                    alert('Account created and logged in. You may now open the dashboard.');
                 }
             });
 
@@ -177,14 +198,14 @@
                     return;
                 }
                 if (facultyMode === 'login') {
-                    const identifier = email || phone;
+                    const identifier = email; // faculty must log in with email
                     const user = findUser('faculty', identifier, password);
                     if (!user) {
                         if (errorEl) { errorEl.textContent = 'Invalid email/phone or password.'; errorEl.style.display = 'block'; }
                         return;
                     }
                     localStorage.setItem('eduquest_user', JSON.stringify(user));
-                    window.location.href = 'dashboard.html';
+                    alert('Login successful. You may now open the teacher dashboard.');
                 } else {
                     if (userExists('faculty', phone, email)) {
                         if (errorEl) { errorEl.textContent = 'An account with this email/phone already exists.'; errorEl.style.display = 'block'; }
@@ -199,7 +220,7 @@
                     users.push(newUser);
                     saveUsers(users);
                     localStorage.setItem('eduquest_user', JSON.stringify(newUser));
-                    window.location.href = 'dashboard.html';
+                    alert('Account created and logged in. You may now open the teacher dashboard.');
                 }
             });
 
