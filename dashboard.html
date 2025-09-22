@@ -38,14 +38,45 @@
                         <h3>Badge Distribution</h3>
                         <canvas id="badges-chart"></canvas>
                     </div>
+                    <div class="chart-card">
+                        <h3>Login Tracker</h3>
+                        <p id="login-tracker" style="text-align:center; font-weight:700; font-size:1.2rem;">Logged-in students: 0</p>
+                    </div>
                 </div>
             </div>
 
             <div class="students-section">
                 <h2>Student Progress</h2>
+                <div style="margin: 0 0 12px 0; display:flex; gap:10px; align-items:center;">
+                    <label>Filter by subject:</label>
+                    <select id="subject-filter">
+                        <option value="all">All</option>
+                        <option value="math">Math</option>
+                        <option value="science">Science</option>
+                        <option value="english">English</option>
+                    </select>
+                </div>
                 <div id="students-list" class="students-list">
                     <!-- Student cards will be populated here -->
                 </div>
+            </div>
+
+            <div class="students-section">
+                <h2>Announcements</h2>
+                <form id="announcement-form" class="material-card" style="display:block; padding:1rem;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <input id="ann-title" type="text" placeholder="Title" />
+                        <select id="ann-audience">
+                            <option value="all">All Students</option>
+                            <option value="student">Specific Student</option>
+                        </select>
+                        <input id="ann-target" type="text" placeholder="Student name (optional)" />
+                        <input id="ann-message" type="text" placeholder="Message" />
+                    </div>
+                    <div style="margin-top:10px; text-align:right;">
+                        <button class="primary-btn" type="submit">Post Announcement</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -95,6 +126,7 @@
                 updateCompletionChart();
                 updateBadgesChart();
                 updateStudentsList();
+                updateLoginTracker();
             }
             
             // Create scores chart
@@ -213,6 +245,10 @@
             function updateStudentsList() {
                 studentsList.innerHTML = '';
                 
+                // Simple subject filter using stored subject scores
+                const subj = document.getElementById('subject-filter').value;
+                const scoreStore = JSON.parse(localStorage.getItem('eduquest_scores') || '{}');
+
                 uploadedData.forEach(data => {
                     const studentCard = document.createElement('div');
                     studentCard.className = 'student-card';
@@ -248,9 +284,39 @@
                         ` : ''}
                     `;
                     
-                    studentsList.appendChild(studentCard);
+                    // If filter applied, show only when student seems lower in that subject (demo logic)
+                    if (subj === 'all' || (subj === 'math' && (scoreStore.math||0) < 60) || (subj === 'science' && (scoreStore.science||0) < 60) || (subj === 'english' && (scoreStore.english||0) < 60)) {
+                        studentsList.appendChild(studentCard);
+                    }
                 });
             }
+
+            // Login tracker: count users with role student in local users store
+            function updateLoginTracker() {
+                const users = JSON.parse(localStorage.getItem('eduquest_users') || '[]');
+                const count = users.filter(u => u.role === 'student').length;
+                const el = document.getElementById('login-tracker');
+                if (el) el.textContent = `Logged-in students: ${count}`;
+            }
+
+            document.getElementById('subject-filter').addEventListener('change', updateStudentsList);
+
+            // Announcements composer
+            const annForm = document.getElementById('announcement-form');
+            annForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const title = document.getElementById('ann-title').value.trim();
+                const audience = document.getElementById('ann-audience').value;
+                const target = document.getElementById('ann-target').value.trim();
+                const message = document.getElementById('ann-message').value.trim();
+                if (!title || !message) return alert('Title and message are required');
+                const list = JSON.parse(localStorage.getItem('eduquest_announcements') || '[]');
+                list.push({ title, audience, target, message, ts: Date.now() });
+                localStorage.setItem('eduquest_announcements', JSON.stringify(list));
+                document.getElementById('ann-title').value='';
+                document.getElementById('ann-message').value='';
+                alert('Announcement posted!');
+            });
         });
     </script>
 
