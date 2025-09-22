@@ -360,6 +360,134 @@
             memoryProgress: 0
         };
 
+        // Translations (EN, HI, OD)
+        const translations = {
+            en: {
+                appTitle: 'EduQuest',
+                subtitle: 'Gamified STEM Learning',
+                chooseLanguage: 'Choose Your Language',
+                welcome: 'Hello',
+                points: 'Points',
+                badges: 'Badges',
+                lessons: 'Lessons',
+                learningMaterials: 'Learning Materials',
+                upload: 'Upload',
+                stemLessons: 'STEM Lessons',
+                mathTitle: 'Mathematics Puzzle',
+                mathDesc: 'Solve equations and unlock rewards',
+                scienceTitle: 'Science Quiz',
+                scienceDesc: 'Test your knowledge of scientific concepts',
+                start: 'Start',
+                dashboard: 'Dashboard',
+                teacherView: 'Teacher View',
+                settings: 'Settings',
+                export: 'Export Progress',
+                import: 'Import Progress',
+                logout: 'Log Out',
+                back: 'Back to dashboard',
+                memoryTitle: 'Memory Match – Vocabulary'
+            },
+            hi: {
+                appTitle: 'EduQuest',
+                subtitle: 'खेल-आधारित STEM शिक्षा',
+                chooseLanguage: 'अपनी भाषा चुनें',
+                welcome: 'नमस्ते',
+                points: 'अंक',
+                badges: 'बैज',
+                lessons: 'पाठ',
+                learningMaterials: 'अध्ययन सामग्री',
+                upload: 'अपलोड',
+                stemLessons: 'एसटीईएम पाठ',
+                mathTitle: 'गणित पहेली',
+                mathDesc: 'समाधान करें और पुरस्कार पाएं',
+                scienceTitle: 'विज्ञान प्रश्नोत्तरी',
+                scienceDesc: 'वैज्ञानिक ज्ञान परखें',
+                start: 'शुरू करें',
+                dashboard: 'डैशबोर्ड',
+                teacherView: 'शिक्षक दृश्य',
+                settings: 'सेटिंग्स',
+                export: 'प्रगति निर्यात करें',
+                import: 'प्रगति आयात करें',
+                logout: 'लॉग आउट',
+                back: 'डैशबोर्ड पर वापस',
+                memoryTitle: 'शब्दार्थ मिलान – शब्दावली'
+            },
+            od: {
+                appTitle: 'EduQuest',
+                subtitle: 'ଖେଳ ଆଧାରିତ STEM ଶିକ୍ଷା',
+                chooseLanguage: 'ଆପଣଙ୍କ ଭାଷା ବାଛନ୍ତୁ',
+                welcome: 'ନମସ୍କାର',
+                points: 'ପଏଣ୍ଟ',
+                badges: 'ବ୍ୟାଜ୍',
+                lessons: 'ପାଠ',
+                learningMaterials: 'ଅଧ୍ୟୟନ ସାମଗ୍ରୀ',
+                upload: 'ଅପଲୋଡ୍',
+                stemLessons: 'STEM ପାଠ',
+                mathTitle: 'ଗଣିତ ପଜଲ୍',
+                mathDesc: 'ସମୀକରଣ ସମାଧାନ କରନ୍ତୁ',
+                scienceTitle: 'ବିଜ୍ଞାନ କ୍ୱିଜ୍',
+                scienceDesc: 'ବିଜ୍ଞାନ ଜ୍ଞାନ ପରୀକ୍ଷା',
+                start: 'ଆରମ୍ଭ',
+                dashboard: 'ଡ୍ୟାଶବୋର୍ଡ',
+                teacherView: 'ଶିକ୍ଷକ ଦୃଶ୍ୟ',
+                settings: 'ସେଟିଙ୍ଗ୍ସ',
+                export: 'ପ୍ରଗତି ଏକ୍ସପୋର୍ଟ',
+                import: 'ପ୍ରଗତି ଇମ୍ପୋର୍ଟ',
+                logout: 'ଲଗ୍ ଆଉଟ୍',
+                back: 'ଡ୍ୟାଶବୋର୍ଡକୁ ଫେରନ୍ତୁ',
+                memoryTitle: 'ଶବ୍ଦ ମେଳ – ଶବ୍ଦାବଳୀ'
+            }
+        };
+
+        // Localized icon map (swapable per language)
+        const iconMap = {
+            en: {
+                logo: 'https://placeholder-image-service.onrender.com/image/200x100?prompt=bright%20educational%20logo%20with%20stars%20and%20science%20symbols&id=lang-logo-1',
+                menu: 'https://placeholder-image-service.onrender.com/image/30x30?prompt=hamburger%20menu%20icon&id=menu-icon-1',
+                profile: 'https://placeholder-image-service.onrender.com/image/30x30?prompt=user%20profile%20icon&id=profile-icon-1',
+                lessonMath: 'https://placeholder-image-service.onrender.com/image/60x60?prompt=math%20lesson%20icon%20with%20calculator&id=lesson-math-1',
+                lessonScience: 'https://placeholder-image-service.onrender.com/image/60x60?prompt=science%20lesson%20icon%20with%20flask&id=lesson-science-1',
+                lessonMemory: 'https://placeholder-image-service.onrender.com/image/60x60?prompt=memory%20cards%20icon%20with%20brain&id=lesson-memory-1',
+                upload: 'https://placeholder-image-service.onrender.com/image/20x20?prompt=upload%20icon&id=upload-icon-1',
+                navHome: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=home%20icon&id=nav-home-1',
+                navTeacher: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=teacher%20dashboard%20icon&id=nav-teacher-1',
+                navSettings: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=settings%20icon&id=nav-settings-1',
+                navExport: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=export%20icon&id=nav-export-1',
+                navImport: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=import%20icon&id=nav-import-1',
+                back: 'https://placeholder-image-service.onrender.com/image/30x30?prompt=back%20arrow%20icon&id=back-icon-1'
+            },
+            hi: {
+                logo: 'https://placeholder-image-service.onrender.com/image/200x100?prompt=उज्ज्वल%20शैक्षिक%20लोगो%20सितारों%20और%20विज्ञान%20प्रतीकों%20के%20साथ&id=lang-logo-hi',
+                menu: 'https://placeholder-image-service.onrender.com/image/30x30?prompt=मेनू%20आइकन&id=menu-icon-hi',
+                profile: 'https://placeholder-image-service.onrender.com/image/30x30?prompt=प्रोफ़ाइल%20आइकन&id=profile-icon-hi',
+                lessonMath: 'https://placeholder-image-service.onrender.com/image/60x60?prompt=कैलकुलेटर%20आइकन%20के%20साथ%20गणित&id=lesson-math-hi',
+                lessonScience: 'https://placeholder-image-service.onrender.com/image/60x60?prompt=फ्लास्क%20आइकन%20के%20साथ%20विज्ञान&id=lesson-science-hi',
+                lessonMemory: 'https://placeholder-image-service.onrender.com/image/60x60?prompt=मेमोरी%20कार्ड%20आइकन%20मस्तिष्क%20के%20साथ&id=lesson-memory-hi',
+                upload: 'https://placeholder-image-service.onrender.com/image/20x20?prompt=अपलोड%20आइकन&id=upload-icon-hi',
+                navHome: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=होम%20आइकन&id=nav-home-hi',
+                navTeacher: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=शिक्षक%20डैशबोर्ड%20आइकन&id=nav-teacher-hi',
+                navSettings: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=सेटिंग्स%20आइकन&id=nav-settings-hi',
+                navExport: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=निर्यात%20आइकन&id=nav-export-hi',
+                navImport: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=आयात%20आइकन&id=nav-import-hi',
+                back: 'https://placeholder-image-service.onrender.com/image/30x30?prompt=पीछे%20तीर%20आइकन&id=back-icon-hi'
+            },
+            od: {
+                logo: 'https://placeholder-image-service.onrender.com/image/200x100?prompt=ଆଲୋକିତ%20ଶିକ୍ଷାଗତ%20ଲୋଗୋ%20ତାରା%20ଏବଂ%20ବିଜ୍ଞାନ%20ଚିହ୍ନ%20ସହିତ&id=lang-logo-od',
+                menu: 'https://placeholder-image-service.onrender.com/image/30x30?prompt=ମେନୁ%20ଆଇକନ&id=menu-icon-od',
+                profile: 'https://placeholder-image-service.onrender.com/image/30x30?prompt=ପ୍ରୋଫାଇଲ୍%20ଆଇକନ&id=profile-icon-od',
+                lessonMath: 'https://placeholder-image-service.onrender.com/image/60x60?prompt=କ୍ୟାଲକୁଲେଟର%20ଆଇକନ%20ସହିତ%20ଗଣିତ&id=lesson-math-od',
+                lessonScience: 'https://placeholder-image-service.onrender.com/image/60x60?prompt=ଫ୍ଲାସ୍କ%20ଆଇକନ୍%20ସହିତ%20ବିଜ୍ଞାନ&id=lesson-science-od',
+                lessonMemory: 'https://placeholder-image-service.onrender.com/image/60x60?prompt=ସ୍ମୃତି%20କାର୍ଡ%20ଆଇକନ୍%20ମସ୍ତିଷ୍କ%20ସହିତ&id=lesson-memory-od',
+                upload: 'https://placeholder-image-service.onrender.com/image/20x20?prompt=ଅପଲୋଡ୍%20ଆଇକନ&id=upload-icon-od',
+                navHome: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=ହୋମ୍%20ଆଇକନ&id=nav-home-od',
+                navTeacher: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=ଶିକ୍ଷକ%20ଡ୍ୟାଶବୋର୍ଡ%20ଆଇକନ&id=nav-teacher-od',
+                navSettings: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=ସେଟିଙ୍ଗ୍ସ%20ଆଇକନ&id=nav-settings-od',
+                navExport: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=ଏକ୍ସପୋର୍ଟ%20ଆଇକନ&id=nav-export-od',
+                navImport: 'https://placeholder-image-service.onrender.com/image/24x24?prompt=ଇମ୍ପୋର୍ଟ%20ଆଇକନ&id=nav-import-od',
+                back: 'https://placeholder-image-service.onrender.com/image/30x30?prompt=ପଛକୁ%20ତୀର%20ଆଇକନ&id=back-icon-od'
+            }
+        };
+
         // Initialize app
         function initApp() {
             // Load user data from localStorage if available
@@ -373,6 +501,9 @@
             
             // Set up event listeners
             setupEventListeners();
+
+            // Apply language on load
+            applyLanguage();
         }
 
         // Set up all event listeners
@@ -384,6 +515,7 @@
                     languageScreen.classList.remove('active');
                     dashboardScreen.classList.add('active');
                     saveUserData();
+                    applyLanguage();
                 });
             });
 
@@ -459,6 +591,124 @@
             // Export/Import data
             document.getElementById('export-data').addEventListener('click', exportUserData);
             document.getElementById('import-data').addEventListener('click', importUserData);
+        }
+
+        // Apply translations and localized icons
+        function applyLanguage() {
+            const lang = userData.language || 'en';
+            const t = translations[lang] || translations.en;
+            const icons = iconMap[lang] || iconMap.en;
+
+            // Language screen
+            const titleEl = document.querySelector('#language-screen .header h1');
+            if (titleEl) titleEl.textContent = t.appTitle;
+            const subtitleEl = document.querySelector('#language-screen .subtitle');
+            if (subtitleEl) subtitleEl.textContent = t.subtitle;
+            const chooseEl = document.querySelector('#language-screen .language-selection h2, #language-screen h2');
+            if (chooseEl) chooseEl.textContent = t.chooseLanguage;
+            const logoEl = document.querySelector('#language-screen .logo');
+            if (logoEl && icons.logo) logoEl.src = icons.logo;
+
+            // App header
+            const headerTitle = document.querySelector('#dashboard-screen .header-content h1');
+            if (headerTitle) headerTitle.textContent = t.appTitle;
+            const menuImg = document.querySelector('#menu-btn img');
+            if (menuImg && icons.menu) menuImg.src = icons.menu;
+            const profileImg = document.querySelector('#profile-btn img');
+            if (profileImg && icons.profile) profileImg.src = icons.profile;
+
+            // Welcome banner and stats labels
+            const welcomeH2 = document.querySelector('.welcome-banner h2');
+            if (welcomeH2) welcomeH2.innerHTML = `${t.welcome}, <span id="username">${userData.username}</span>!`;
+            const statLabels = document.querySelectorAll('.progress-stats .stat .stat-label');
+            if (statLabels && statLabels.length >= 3) {
+                statLabels[0].textContent = t.points;
+                statLabels[1].textContent = t.badges;
+                statLabels[2].textContent = t.lessons;
+            }
+
+            // Materials header and upload button text/icon
+            const materialsHeader = document.querySelector('.materials-section .section-header h3');
+            if (materialsHeader) materialsHeader.textContent = t.learningMaterials;
+            const uploadBtnEl = document.getElementById('upload-btn');
+            if (uploadBtnEl) {
+                const uploadImg = uploadBtnEl.querySelector('img');
+                if (uploadImg && icons.upload) uploadImg.src = icons.upload;
+                // set text node after img
+                const imgSibling = uploadImg && uploadImg.nextSibling;
+                if (imgSibling) imgSibling.textContent = ' ' + t.upload;
+            }
+
+            // Lessons section titles and icons
+            const lessonsHeader = document.querySelector('.lessons-section h3');
+            if (lessonsHeader) lessonsHeader.textContent = t.stemLessons;
+
+            const mathCard = document.querySelector('[data-lesson="math"]');
+            if (mathCard) {
+                const img = mathCard.querySelector('.lesson-icon img');
+                if (img && icons.lessonMath) img.src = icons.lessonMath;
+                const h4 = mathCard.querySelector('.lesson-info h4');
+                const p = mathCard.querySelector('.lesson-info p');
+                if (h4) h4.textContent = t.mathTitle;
+                if (p) p.textContent = t.mathDesc;
+                const btn = mathCard.querySelector('.start-lesson-btn');
+                if (btn) btn.textContent = t.start;
+            }
+
+            const memoryCard = document.querySelector('[data-lesson="memory"]');
+            if (memoryCard) {
+                const img = memoryCard.querySelector('.lesson-icon img');
+                if (img && icons.lessonMemory) img.src = icons.lessonMemory;
+                const h4 = memoryCard.querySelector('.lesson-info h4');
+                if (h4) h4.textContent = t.memoryTitle;
+                const btn = memoryCard.querySelector('.start-lesson-btn');
+                if (btn) btn.textContent = t.start;
+            }
+
+            const sciCard = document.querySelector('[data-lesson="science"]');
+            if (sciCard) {
+                const img = sciCard.querySelector('.lesson-icon img');
+                if (img && icons.lessonScience) img.src = icons.lessonScience;
+                const h4 = sciCard.querySelector('.lesson-info h4');
+                const p = sciCard.querySelector('.lesson-info p');
+                if (h4) h4.textContent = t.scienceTitle;
+                if (p) p.textContent = t.scienceDesc;
+                const btn = sciCard.querySelector('.start-lesson-btn');
+                if (btn) btn.textContent = t.start;
+            }
+
+            // Drawer labels and icons
+            const drawer = document.getElementById('nav-drawer');
+            if (drawer) {
+                const items = drawer.querySelectorAll('.drawer-nav .nav-item');
+                items.forEach(item => {
+                    const span = item.querySelector('span');
+                    const img = item.querySelector('img');
+                    if (span) {
+                        if (span.textContent.includes('Dashboard')) span.textContent = t.dashboard;
+                        else if (span.textContent.includes('Teacher')) span.textContent = t.teacherView;
+                        else if (span.textContent.includes('Settings')) span.textContent = t.settings;
+                        else if (span.textContent.includes('Export')) span.textContent = t.export;
+                        else if (span.textContent.includes('Import')) span.textContent = t.import;
+                    }
+                    if (img) {
+                        if (img.alt.includes('Home') && icons.navHome) img.src = icons.navHome;
+                        else if (img.alt.includes('Teacher') && icons.navTeacher) img.src = icons.navTeacher;
+                        else if (img.alt.includes('Settings') && icons.navSettings) img.src = icons.navSettings;
+                        else if (img.alt.includes('Export') && icons.navExport) img.src = icons.navExport;
+                        else if (img.alt.includes('Import') && icons.navImport) img.src = icons.navImport;
+                    }
+                });
+            }
+
+            // Back button icon and title
+            const backBtn = document.getElementById('back-to-dashboard');
+            if (backBtn) {
+                const img = backBtn.querySelector('img');
+                if (img && icons.back) img.src = icons.back;
+                backBtn.setAttribute('aria-label', t.back);
+                backBtn.title = t.back;
+            }
         }
 
         // Handle file uploads
